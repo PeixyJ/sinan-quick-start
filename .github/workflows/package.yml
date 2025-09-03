@@ -1,0 +1,107 @@
+name: Package and Upload Artifacts
+
+on:
+  push:
+    branches: [ main, develop ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Create package info
+      run: |
+        echo "Package created at: $(date)" > package-info.txt
+        echo "Git commit: ${{ github.sha }}" >> package-info.txt
+        echo "Git ref: ${{ github.ref }}" >> package-info.txt
+        echo "Workflow run: ${{ github.run_number }}" >> package-info.txt
+        
+    - name: Prepare package directory
+      run: |
+        mkdir -p sinan-quick-start-package
+        cp -r * sinan-quick-start-package/ || true
+        # 排除不需要的文件和目录
+        rm -rf sinan-quick-start-package/.git
+        rm -rf sinan-quick-start-package/.github
+        rm -f sinan-quick-start-package/.gitignore
+        rm -f sinan-quick-start-package/.gitattributes
+        
+        # 将 package-info.txt 添加到包中
+        mv package-info.txt sinan-quick-start-package/
+        
+    - name: Create ZIP package
+      run: |
+        cd sinan-quick-start-package
+        zip -r ../sinan-quick-start-${{ github.run_number }}.zip .
+        cd ..
+        
+        # 创建带版本号的包（如果是标签触发）
+        if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+          VERSION=${GITHUB_REF#refs/tags/}
+          cp sinan-quick-start-${{ github.run_number }}.zip sinan-quick-start-${VERSION}.zip
+        fi
+        
+    - name: Generate package checksum
+      run: |
+        sha256sum sinan-quick-start-*.zip > checksums.txt
+        
+    - name: Upload ZIP artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: sinan-quick-start-package-${{ github.run_number }}
+        path: |
+          sinan-quick-start-*.zip
+          checksums.txt
+        retention-days: 30
+        
+    - name: Upload package info
+      uses: actions/upload-artifact@v4
+      with:
+        name: package-info-${{ github.run_number }}
+        path: sinan-quick-start-package/package-info.txt
+        retention-days: 15
+        
+    - name: Create Release (for tags)
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          sinan-quick-start-*.zip
+          checksums.txt
+        body: |
+          ## Sinan Quick Start Release
+          
+          This release contains the complete Sinan quick start package with:
+          - Docker Compose configuration
+          - Application configuration files
+          - Database initialization scripts
+          - Nginx configuration
+          - Documentation
+          
+          ### Package Contents
+          - `docker-compose.yaml` - Docker Compose services configuration
+          - `application.yaml` - Spring Boot application configuration
+          - `nginx.conf` - Nginx reverse proxy configuration
+          - `sinan_dev.sql` - MySQL database initialization script
+          - `README.md` - Complete setup and usage documentation
+          - `package-info.txt` - Build information
+          
+          ### Quick Start
+          1. Download and extract the ZIP file
+          2. Ensure Docker and Docker Compose are installed
+          3. Run `docker-compose up -d`
+          4. Access the application at http://localhost
+          
+          ### Checksums
+          See `checksums.txt` for file integrity verification.
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

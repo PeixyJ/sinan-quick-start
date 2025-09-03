@@ -2,6 +2,8 @@
 
 基于 Docker Compose 的 Sinan 项目快速启动方案，包含完整的前后端服务和数据库环境。
 
+![Package Status](https://github.com/PeixyJ/sinan-quick-start/workflows/Package%20and%20Upload%20Artifacts/badge.svg)
+
 ## 项目架构
 
 本项目包含以下服务：
@@ -271,6 +273,48 @@ docker-compose exec redis redis-cli
 1. 停止相应的容器
 2. 在本地启动开发服务
 3. 修改环境变量指向本地数据库和Redis
+
+## 自动化构建与发布
+
+本项目使用 GitHub Actions 进行自动化打包和发布。
+
+### 构建触发条件
+- **Push** 到 `main` 或 `develop` 分支
+- **标签** 推送 (v*)
+- **Pull Request** 到 `main` 分支
+- **手动触发** (workflow_dispatch)
+
+### 制品下载
+
+#### 开发版本
+每次代码推送都会自动构建并上传制品，您可以：
+1. 访问 [Actions 页面](https://github.com/PeixyJ/sinan-quick-start/actions)
+2. 选择最新的构建记录
+3. 下载 `sinan-quick-start-package-xxx` 制品
+
+#### 正式版本
+创建标签时会自动创建 Release：
+1. 访问 [Releases 页面](https://github.com/PeixyJ/sinan-quick-start/releases)
+2. 下载最新版本的 ZIP 包
+3. 验证文件完整性（使用 checksums.txt）
+
+### 包内容
+自动构建的包包含：
+- `docker-compose.yaml` - Docker Compose 配置
+- `application.yaml` - Spring Boot 配置
+- `nginx.conf` - Nginx 配置
+- `sinan_dev.sql` - 数据库初始化脚本
+- `README.md` - 完整文档
+- `package-info.txt` - 构建信息
+
+### 创建正式版本
+```bash
+# 创建标签并推送
+git tag v1.0.0
+git push origin v1.0.0
+
+# 这将自动触发构建并创建 Release
+```
 
 ## 版本信息
 
