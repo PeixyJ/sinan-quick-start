@@ -290,7 +290,7 @@ docker-compose exec redis redis-cli
 每次代码推送都会自动构建并上传制品，您可以：
 1. 访问 [Actions 页面](https://github.com/PeixyJ/sinan-quick-start/actions)
 2. 选择最新的构建记录
-3. 下载 `sinan-quick-start-package-xxx` 制品
+3. 下载 `sinan-quick-start-package-xxx` 制品（自动打包为ZIP）
 
 #### 正式版本
 创建标签时会自动创建 Release：
