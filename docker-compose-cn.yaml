@@ -1,0 +1,107 @@
+version: '3.8'
+
+services:
+  sinan-server:
+    image: registry.cn-hangzhou.aliyuncs.com/yixing-tech/sinan-server:latest
+    container_name: sinan-server
+    ports:
+      - "8080:8080"
+    environment:
+      # Spring 配置
+      - SPRING_PROFILES_ACTIVE=prod
+      - TZ=Asia/Shanghai
+
+      # 数据库配置 - 连接内部 MySQL
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=sinan
+      - DB_USERNAME=sinan
+      - DB_PASSWORD=sinan123
+
+      # Redis 配置 - 连接内部 Redis
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=
+      - REDIS_DATABASE=0
+
+      # 日志配置
+      - LOG_LEVEL=INFO
+      - APP_LOG_LEVEL=INFO
+      - LOG_FILE_PATH=/app/logs/sinan-server.log
+
+      # GitHub OAuth 配置
+      - GITHUB_CLIENT_ID=<GITHUB_CLIENT_ID>
+      - GITHUB_CLIENT_SECRET=<GITHUB_CLIENT_SECRET>
+      - GITHUB_REDIRECT_URI=<GITHUB_REDIRECT_URI>
+    volumes:
+      - ./logs:/app/logs
+      - ./application.yaml:/resources/application.yaml
+    depends_on:
+      - redis
+      - mysql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  sinan-website:
+    image: registry.cn-hangzhou.aliyuncs.com/yixing-tech/sinan-website:latest
+    container_name: sinan-website
+    ports:
+      - "80:80"
+    environment:
+      - TZ=Asia/Shanghai
+      # 前端环境变量配置
+      - API_BASE_URL=api
+      - NODE_ENV=production
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - sinan-server
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  redis:
+    image: registry.cn-hangzhou.aliyuncs.com/yixing-tech/redis:8.2.1
+    container_name: sinan-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+  mysql:
+    image: registry.cn-hangzhou.aliyuncs.com/yixing-tech/mysql:8.4.6
+    container_name: sinan-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root123
+      - MYSQL_DATABASE=sinan
+      - MYSQL_USER=sinan
+      - MYSQL_PASSWORD=sinan123
+      - TZ=Asia/Shanghai
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./sinan_dev.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot123"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+volumes:
+  mysql_data:
+  redis_data:

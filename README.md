@@ -17,13 +17,34 @@
 
 ```
 sinan-quick-start/
-├── docker-compose.yaml      # Docker Compose 配置文件
-├── README.md                # 项目说明文档
-├── sinan_dev.sql           # MySQL 数据库初始化脚本
-├── application.yaml        # Spring Boot 应用配置文件 (需要创建)
-├── nginx.conf              # Nginx 配置文件 (需要创建)
-└── logs/                   # 应用日志目录 (自动创建)
+├── docker-compose.yaml         # Docker Compose 配置文件 (GitHub镜像)
+├── docker-compose-cn.yaml      # Docker Compose 配置文件 (阿里云镜像)
+├── README.md                   # 项目说明文档
+├── sinan_dev.sql              # MySQL 数据库初始化脚本
+├── application.yaml           # Spring Boot 应用配置文件 (需要创建)
+├── nginx.conf                 # Nginx 配置文件 (需要创建)
+└── logs/                      # 应用日志目录 (自动创建)
 ```
+
+## 镜像选择
+
+本项目提供两个版本的Docker Compose配置：
+
+### 1. 国际版本 (docker-compose.yaml)
+适用于海外用户或网络环境良好的用户：
+- `ghcr.io/peixyj/sinan-server:latest`
+- `ghcr.io/peixyj/sinan-website:latest`
+- `redis:7-alpine`
+- `mysql:8.0`
+
+### 2. 中国版本 (docker-compose-cn.yaml)
+适用于中国大陆用户，使用阿里云镜像仓库：
+- `registry.cn-hangzhou.aliyuncs.com/yixing-tech/sinan-server:latest`
+- `registry.cn-hangzhou.aliyuncs.com/yixing-tech/sinan-website:latest`
+- `registry.cn-hangzhou.aliyuncs.com/yixing-tech/redis:8.2.1`
+- `registry.cn-hangzhou.aliyuncs.com/yixing-tech/mysql:8.4.6`
+
+**建议中国大陆用户使用 `docker-compose-cn.yaml` 以获得更快的下载速度。**
 
 ## 必需配置文件
 
@@ -151,6 +172,13 @@ cd sinan-quick-start
 您可以根据上面的示例配置创建这些文件，或者根据您的具体需求进行调整。
 
 3. 启动所有服务
+
+**中国大陆用户（推荐）**:
+```bash
+docker-compose -f docker-compose-cn.yaml up -d
+```
+
+**海外用户或网络环境良好**:
 ```bash
 docker-compose up -d
 ```
@@ -216,6 +244,36 @@ docker-compose ps
 - ✅ 部署时配置统一管理
 
 ## 常用命令
+
+### 中国大陆用户 (阿里云镜像)
+
+```bash
+# 启动所有服务
+docker-compose -f docker-compose-cn.yaml up -d
+
+# 查看服务状态
+docker-compose -f docker-compose-cn.yaml ps
+
+# 查看服务日志
+docker-compose -f docker-compose-cn.yaml logs -f [service-name]
+
+# 停止所有服务
+docker-compose -f docker-compose-cn.yaml down
+
+# 停止服务并删除数据卷
+docker-compose -f docker-compose-cn.yaml down -v
+
+# 重新构建并启动
+docker-compose -f docker-compose-cn.yaml up -d --build
+
+# 进入MySQL容器
+docker-compose -f docker-compose-cn.yaml exec mysql mysql -u sinan -p
+
+# 进入Redis容器
+docker-compose -f docker-compose-cn.yaml exec redis redis-cli
+```
+
+### 海外用户 (GitHub镜像)
 
 ```bash
 # 启动所有服务
@@ -300,7 +358,8 @@ docker-compose exec redis redis-cli
 
 ### 包内容
 自动构建的包包含：
-- `docker-compose.yaml` - Docker Compose 配置
+- `docker-compose.yaml` - Docker Compose 配置 (GitHub镜像)
+- `docker-compose-cn.yaml` - Docker Compose 配置 (阿里云镜像)
 - `application.yaml` - Spring Boot 配置
 - `nginx.conf` - Nginx 配置
 - `sinan_dev.sql` - 数据库初始化脚本

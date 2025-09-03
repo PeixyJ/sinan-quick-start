@@ -77,7 +77,8 @@ jobs:
           - Documentation
           
           ### Package Contents
-          - `docker-compose.yaml` - Docker Compose services configuration
+          - `docker-compose.yaml` - Docker Compose services configuration (GitHub镜像)
+          - `docker-compose-cn.yaml` - Docker Compose services configuration (阿里云镜像)
           - `application.yaml` - Spring Boot application configuration
           - `nginx.conf` - Nginx reverse proxy configuration
           - `sinan_dev.sql` - MySQL database initialization script
