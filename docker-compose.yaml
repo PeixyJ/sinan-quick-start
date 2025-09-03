@@ -99,8 +99,7 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
-    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 volumes:
   mysql_data:
   redis_data:
