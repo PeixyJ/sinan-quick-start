@@ -56,3 +56,7 @@ github:
     client-id: ${GITHUB_CLIENT_ID:}
     client-secret: ${GITHUB_CLIENT_SECRET:}
     redirect-uri: ${GITHUB_REDIRECT_URI:http://localhost/github-callback}
+
+sinan:
+  server:
+    base-url: ${SINAN_BASE_URL:https://sinan.host}
