@@ -223,6 +223,20 @@ docker-compose ps
 - `GITHUB_CLIENT_SECRET`: GitHub应用客户端密钥
 - `GITHUB_REDIRECT_URI`: OAuth回调地址
 
+### Sinan相关配置
+
+如需使用Sinan相关功能，请配置以下环境变量：
+- `SINAN_BASE_URL`: Sinan应用的基础URL（如 `sinan.host`）
+- `UPLOAD_BASE_PATH`: 文件上传的基础路径（如 `./upload`）
+- `UPLOAD_ICON_PATH`: 图标文件存储路径（如 `icons`）
+- `UPLOAD_URL_PREFIX`: 文件上传的URL前缀（如 `/api/bookmark`）
+
+### Passkey认证配置
+如需使用Passkey认证功能，请配置以下环境变量：
+- `PASSKEY_ID`: Passkey认证的ID（如 `sinan.host`）
+- `PASSKEY_NAME`: Passkey认证的名称（如 `sinan`）
+- `PASSKEY_ORIGIN`: Passkey认证的来源（如 `https://sinan.host`）
+
 ## 数据持久化
 
 项目使用Docker卷进行数据持久化：

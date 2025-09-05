@@ -60,3 +60,16 @@ github:
 sinan:
   server:
     base-url: ${SINAN_BASE_URL:https://sinan.host}
+  upload:
+    # 上传文件的基础路径
+    base-path: ${UPLOAD_BASE_PATH:./upload}
+    # 图标上传路径
+    icon-path: ${UPLOAD_ICON_PATH:icons}
+    # 访问URL前缀
+    url-prefix: ${UPLOAD_URL_PREFIX:/api/bookmark}
+passkey:
+  id: ${PASSKEY_ID:https://sinan.host}
+  name: ${PASSKEY_NAME:sinan}
+  origins:
+    - ${PASSKEY_ORIGIN:https://sinan.host}
+

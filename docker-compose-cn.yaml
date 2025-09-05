@@ -33,9 +33,18 @@ services:
       - GITHUB_CLIENT_ID=<GITHUB_CLIENT_ID>
       - GITHUB_CLIENT_SECRET=<GITHUB_CLIENT_SECRET>
       - GITHUB_REDIRECT_URI=<GITHUB_REDIRECT_URI>
+
+      - SINAN_BASE_URL=sinan.host
+      - UPLOAD_BASE_PATH=./upload
+      - UPLOAD_ICON_PATH=icons
+      - UPLOAD_URL_PREFIX=/api/bookmark
+      - PASSKEY_ID=sinan.host
+      - PASSKEY_NAME=sinan
+      - PASSKEY_ORIGIN=https://sinan.host
     volumes:
       - ./logs:/app/logs
       - ./application.yaml:/resources/application.yaml
+      - upload_data:/upload
     depends_on:
       - redis
       - mysql
@@ -105,3 +114,4 @@ services:
 volumes:
   mysql_data:
   redis_data:
+  upload_data:
