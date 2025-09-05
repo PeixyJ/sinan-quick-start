@@ -42,8 +42,9 @@ services:
       - PASSKEY_NAME=<PASSKEY_NAME>
       - PASSKEY_ORIGIN=<PASSKEY_ORIGIN>
     volumes:
-      - ./logs:/app/logs
+      - logs_data:/app/logs
       - ./application.yaml:/resources/application.yaml
+      - upload_data:/app/upload
     depends_on:
       - redis
       - mysql
@@ -111,3 +112,5 @@ services:
 volumes:
   mysql_data:
   redis_data:
+  upload_data:
+  logs_data:

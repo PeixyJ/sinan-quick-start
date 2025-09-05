@@ -44,7 +44,7 @@ services:
     volumes:
       - ./logs:/app/logs
       - ./application.yaml:/resources/application.yaml
-      - upload_data:/upload
+      - upload_data:/app/upload
     depends_on:
       - redis
       - mysql
