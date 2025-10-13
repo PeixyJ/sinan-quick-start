@@ -1,62 +1,65 @@
 spring:
   profiles:
-    active: ${SPRING_PROFILES_ACTIVE:prod}
-  jackson:
-    default-property-inclusion: non_null
-    time-zone: Asia/Shanghai
-    date-format: yyyy-MM-dd HH:mm:ss
+    active: dev
+
   datasource:
-    url: jdbc:mysql://${DB_HOST:mysql}:${DB_PORT:3306}/${DB_NAME:sinan}?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&nullCatalogMeansCurrent=true
-    username: ${DB_USERNAME:sinan}
-    password: ${DB_PASSWORD:sinan123}
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:sinan}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:123456}
     driver-class-name: com.mysql.cj.jdbc.Driver
+
   data:
     redis:
-      host: ${REDIS_HOST:redis}
+      host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD:}
       database: ${REDIS_DATABASE:0}
-      timeout: 2000ms
+      timeout: 3000ms
       lettuce:
         pool:
           max-active: 8
           max-idle: 8
           min-idle: 0
-          max-wait: -1ms
-
-server:
-  port: ${SERVER_PORT:8080}
-  servlet:
-    context-path: /api
-
-mybatis-plus:
-  configuration:
-    log-impl: ${MYBATIS_LOG_IMPL:org.apache.ibatis.logging.stdout.StdOutImpl}
-    map-underscore-to-camel-case: true
-  global-config:
-    db-config:
-      logic-delete-field: deleted
-      logic-delete-value: 1
-      logic-not-delete-value: 0
-      id-type: assign_uuid
-  mapper-locations: classpath:mapper/*.xml
-
-logging:
-  level:
-    root: ${LOG_LEVEL:INFO}
-    pres.peixinyi.sinan: ${APP_LOG_LEVEL:INFO}
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-  file:
-    name: ${LOG_FILE_PATH:/app/logs/sinan-server.log}
-
-github:
-  oauth2:
-    client-id: ${GITHUB_CLIENT_ID:}
-    client-secret: ${GITHUB_CLIENT_SECRET:}
-    redirect-uri: ${GITHUB_REDIRECT_URI:http://localhost/github-callback}
-
+          max-wait: 3000ms
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:}
+      base-url: ${OPENAI_BASE_URL:/v1/chat/completions}
+      chat:
+        options:
+          model: ${OPENAI_MODEL:gpt-4o-mini}
+          temperature: 0.7
+        completions-path: ${OPENAI_COMPLETIONS_PATH:/v1/chat/completions}
+  mail:
+    host: ${MAIL_HOST:}
+    port: ${MAIL_PORT:}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: ${MAIL_SSL_ENABLE:true}
+            required: ${MAIL_SSL_REQUIRED:true}
+          starttls:
+            enable: ${MAIL_STARTTLS_ENABLE:false}
+            required: ${MAIL_STARTTLS_REQUIRED:false}
+          socketFactory:
+            class: javax.net.ssl.SSLSocketFactory
+            port: ${MAIL_PORT:465}
+          connectiontimeout: 5000
+          timeout: 3000
+          writetimeout: 5000
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    baseline-version: 1
+    clean-disabled: true
+    sql-migration-prefix: V
+    sql-migration-suffixes: .sql
+    encoding: utf-8
 sinan:
   server:
     base-url: ${SINAN_BASE_URL:https://sinan.host}
@@ -65,11 +68,48 @@ sinan:
     base-path: ${UPLOAD_BASE_PATH:./upload}
     # 图标上传路径
     icon-path: ${UPLOAD_ICON_PATH:icons}
+    # 头像上传路径
+    avatar-path: ${UPLOAD_AVATAR_PATH:avatars}
     # 访问URL前缀
-    url-prefix: ${UPLOAD_URL_PREFIX:/api/bookmark}
+    url-prefix: ${UPLOAD_URL_PREFIX:/api/user}
+favicon:
+  cache:
+    # favicon缓存目录
+    dir: ${FAVICON_CACHE_DIR:upload/icons}
 passkey:
   id: ${PASSKEY_ID:https://sinan.host}
   name: ${PASSKEY_NAME:sinan}
   origins:
     - ${PASSKEY_ORIGIN:https://sinan.host}
-
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+      id-type: ASSIGN_UUID
+sa-token:
+  token-name: Authorization
+  token-prefix: Bearer
+  timeout: 7776000
+  active-timeout: -1
+  is-concurrent: true
+  is-share: true
+  token-style: uuid
+  is-log: false
+logging:
+  level:
+    pres.peixinyi.sinan: ${LOG_LEVEL:INFO}
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+server:
+  servlet:
+    context-path: /api
+github:
+  oauth2:
+    client-id: ${GITHUB_CLIENT_ID:}
+    client-secret: ${GITHUB_CLIENT_SECRET:}
+    redirect-uri: ${GITHUB_REDIRECT_URI:http://localhost/github-callback}

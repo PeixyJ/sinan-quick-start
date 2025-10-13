@@ -4,8 +4,8 @@ services:
   sinan-server:
     image: registry.cn-hangzhou.aliyuncs.com/yixing-tech/sinan-server:latest
     container_name: sinan-server
-    ports:
-      - "8080:8080"
+    expose:
+      - "8080"
     environment:
       # Spring 配置
       - SPRING_PROFILES_ACTIVE=prod
@@ -34,13 +34,31 @@ services:
       - GITHUB_CLIENT_SECRET=<GITHUB_CLIENT_SECRET>
       - GITHUB_REDIRECT_URI=<GITHUB_REDIRECT_URI>
 
-      - SINAN_BASE_URL=sinan.host
-      - UPLOAD_BASE_PATH=./upload
-      - UPLOAD_ICON_PATH=icons
-      - UPLOAD_URL_PREFIX=/api/bookmark
-      - PASSKEY_ID=sinan.host
-      - PASSKEY_NAME=sinan
-      - PASSKEY_ORIGIN=https://sinan.host
+      # OpenAI 配置
+      - OPENAI_API_KEY=<OPENAI_API_KEY>
+      - OPENAI_BASE_URL=<OPENAI_BASE_URL>
+      - OPENAI_MODEL=<OPENAI_MODEL>
+
+      # 邮件配置
+      - MAIL_HOST=<MAIL_HOST>
+      - MAIL_PORT=<MAIL_PORT>
+      - MAIL_USERNAME=<MAIL_USERNAME>
+      - MAIL_PASSWORD=<MAIL_PASSWORD>
+      - MAIL_SSL_ENABLE=<MAIL_SSL_ENABLE>
+      - MAIL_SSL_REQUIRED=<MAIL_SSL_REQUIRED>
+      - MAIL_STARTTLS_ENABLE=<MAIL_STARTTLS_ENABLE>
+      - MAIL_STARTTLS_REQUIRED=<MAIL_STARTTLS_REQUIRED>
+
+      # Sinan 配置
+      - SINAN_BASE_URL=<SINAN_BASE_URL>
+      - UPLOAD_BASE_PATH=<UPLOAD_BASE_PATH>
+      - UPLOAD_ICON_PATH=<UPLOAD_ICON_PATH>
+      - UPLOAD_AVATAR_PATH=<UPLOAD_AVATAR_PATH>
+      - UPLOAD_URL_PREFIX=<UPLOAD_URL_PREFIX>
+      - FAVICON_CACHE_DIR=<FAVICON_CACHE_DIR>
+      - PASSKEY_ID=<PASSKEY_ID>
+      - PASSKEY_NAME=<PASSKEY_NAME>
+      - PASSKEY_ORIGIN=<PASSKEY_ORIGIN>
     volumes:
       - ./logs:/app/logs
       - ./application.yaml:/resources/application.yaml
@@ -81,8 +99,8 @@ services:
   redis:
     image: registry.cn-hangzhou.aliyuncs.com/yixing-tech/redis:8.2.1
     container_name: sinan-redis
-    ports:
-      - "6379:6379"
+    expose:
+      - "6379"
     volumes:
       - redis_data:/data
     restart: unless-stopped
@@ -91,8 +109,8 @@ services:
   mysql:
     image: registry.cn-hangzhou.aliyuncs.com/yixing-tech/mysql:8.4.6
     container_name: sinan-mysql
-    ports:
-      - "3306:3306"
+    expose:
+      - "3306"
     environment:
       - MYSQL_ROOT_PASSWORD=root123
       - MYSQL_DATABASE=sinan
@@ -101,7 +119,6 @@ services:
       - TZ=Asia/Shanghai
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./sinan_dev.sql:/docker-entrypoint-initdb.d/init.sql
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot123"]
@@ -115,3 +132,6 @@ volumes:
   mysql_data:
   redis_data:
   upload_data:
+networks:
+  default:
+    driver: bridge
