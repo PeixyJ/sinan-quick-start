@@ -1,30 +1,115 @@
-# Sinan Quick Start
+# Sinan 快速启动
+
+## 🚀 快速启动
+
+### 国内用户（阿里云镜像）
+```bash
+# 1. 克隆项目
+git clone https://github.com/peixyj/sinan-quick-start.git
+cd sinan-quick-start
+
+# 2. 配置环境变量
+cp .env.example .env
+# 编辑 .env 文件，填入你的配置
+
+# 3. 启动服务
+docker-compose -f docker-compose-cn.yaml up -d
+```
+
+### 国外用户（GitHub 镜像）
+```bash
+# 1. 克隆项目
+git clone https://github.com/peixyj/sinan-quick-start.git
+cd sinan-quick-start
+
+# 2. 配置环境变量
+cp .env.example .env
+# 编辑 .env 文件，填入你的配置
+
+# 3. 启动服务
+docker-compose up -d
+```
 
 基于 Docker Compose 的 Sinan 项目快速启动方案，包含完整的前后端服务和数据库环境。
 
 ![Package Status](https://github.com/PeixyJ/sinan-quick-start/workflows/Package%20and%20Upload%20Artifacts/badge.svg)
 
-## 项目架构
+## 📋 环境变量配置
+
+创建 `.env` 文件并配置以下变量：
+
+### 必需配置
+```env
+# GitHub OAuth (必需)
+GITHUB_CLIENT_ID=your_github_client_id
+GITHUB_CLIENT_SECRET=your_github_client_secret
+GITHUB_REDIRECT_URI=http://localhost/github-callback
+
+# Sinan 基础配置
+SINAN_BASE_URL=https://your-domain.com
+PASSKEY_ID=https://your-domain.com
+PASSKEY_ORIGIN=https://your-domain.com
+```
+
+### AI 功能配置
+```env
+# OpenAI 配置 (可选)
+OPENAI_API_KEY=your_openai_api_key
+OPENAI_BASE_URL=https://api.openai.com
+OPENAI_MODEL=gpt-4o-mini
+```
+
+### 邮件功能配置
+```env
+# SMTP 配置 (可选)
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=your_email@gmail.com
+MAIL_PASSWORD=your_app_password
+MAIL_SSL_ENABLE=true
+MAIL_SSL_REQUIRED=true
+MAIL_STARTTLS_ENABLE=false
+MAIL_STARTTLS_REQUIRED=false
+```
+
+### 文件上传配置
+```env
+# 上传路径配置
+UPLOAD_BASE_PATH=./upload
+UPLOAD_ICON_PATH=icons
+UPLOAD_AVATAR_PATH=avatars
+UPLOAD_URL_PREFIX=/api/user
+FAVICON_CACHE_DIR=upload/icons
+```
+
+## 🏗️ 服务架构
 
 本项目包含以下服务：
 
-- **sinan-server**: 后端API服务
-- **sinan-website**: 前端Web应用
-- **MySQL 8.0**: 主数据库
-- **Redis 7**: 缓存和会话存储
+- **sinan-server**: 后端API服务 (端口 8080)
+- **sinan-website**: 前端Web应用 (端口 80)
+- **MySQL 8.0**: 主数据库 (端口 3306)
+- **Redis 7**: 缓存和会话存储 (端口 6379)
 
-## 项目文件结构
+## 📁 目录结构
 
 ```
 sinan-quick-start/
-├── docker-compose.yaml         # Docker Compose 配置文件 (GitHub镜像)
-├── docker-compose-cn.yaml      # Docker Compose 配置文件 (阿里云镜像)
-├── README.md                   # 项目说明文档
-├── sinan_dev.sql              # MySQL 数据库初始化脚本
-├── application.yaml           # Spring Boot 应用配置文件 (需要创建)
-├── nginx.conf                 # Nginx 配置文件 (需要创建)
-└── logs/                      # 应用日志目录 (自动创建)
+├── docker-compose.yaml          # 国外用户使用
+├── docker-compose-cn.yaml       # 国内用户使用
+├── application.yaml             # Spring Boot 配置
+├── nginx.conf                   # Nginx 配置
+├── sinan_dev.sql               # 数据库初始化脚本
+├── .env.example                # 环境变量模板
+├── logs/                       # 日志目录
+└── upload/                     # 文件上传目录
 ```
+
+## 🔧 访问地址
+
+- **前端网站**: http://localhost
+- **后端 API**: http://localhost/api
+- **健康检查**: http://localhost/api/actuator/health
 
 ## 镜像选择
 
@@ -148,52 +233,72 @@ http {
 - **后端API**: 端口 8080
 - **前端Web**: 端口 80
 
-## 快速开始
+## 📊 数据库配置
 
-### 前置要求
+默认数据库配置：
+- **数据库名**: sinan
+- **用户名**: sinan
+- **密码**: sinan123
+- **Root 密码**: root123
 
-- Docker
-- Docker Compose
+## 🔍 故障排查
 
-### 启动服务
-
-1. 克隆项目到本地
-```bash
-git clone <repository-url>
-cd sinan-quick-start
-```
-
-2. 创建必需的配置文件
-确保项目根目录下包含以下文件：
-- `sinan_dev.sql` - 数据库初始化脚本
-- `application.yaml` - Spring Boot 配置文件
-- `nginx.conf` - Nginx 配置文件
-
-您可以根据上面的示例配置创建这些文件，或者根据您的具体需求进行调整。
-
-3. 启动所有服务
-
-**中国大陆用户（推荐）**:
-```bash
-docker-compose -f docker-compose-cn.yaml up -d
-```
-
-**海外用户或网络环境良好**:
-```bash
-docker-compose up -d
-```
-
-4. 查看服务状态
+### 查看服务状态
 ```bash
 docker-compose ps
 ```
 
-### 服务访问
+### 查看日志
+```bash
+# 查看所有服务日志
+docker-compose logs
 
-- **前端应用**: http://localhost
-- **后端API**: http://localhost:8080
-- **MySQL数据库**: localhost:3306
-- **Redis**: localhost:6379
+# 查看特定服务日志
+docker-compose logs sinan-server
+```
+
+### 重启服务
+```bash
+docker-compose restart
+```
+
+### 停止服务
+```bash
+docker-compose down
+```
+
+## 🛠️ 开发模式
+
+如需开发调试，可以单独启动后端：
+```bash
+# 启动数据库和缓存
+docker-compose up -d mysql redis
+
+# 本地运行后端
+./mvnw spring-boot:run
+
+# 启动前端
+docker-compose up sinan-website
+```
+
+## 📝 配置说明
+
+### application.yaml 主要配置项：
+
+- **数据库连接**: 支持 MySQL 8.0
+- **缓存**: Redis 连接池配置
+- **AI 集成**: OpenAI API 支持
+- **邮件**: SMTP 邮件发送
+- **文件上传**: 支持图标、头像上传
+- **认证**: Sa-Token JWT 认证
+- **数据库迁移**: Flyway 自动迁移
+
+### Docker Compose 特性：
+
+- **健康检查**: 自动监控服务状态
+- **数据持久化**: 数据库和 Redis 数据持久化
+- **自动重启**: 服务异常时自动重启
+- **日志管理**: 集中化日志收集
 
 ### 健康检查
 
